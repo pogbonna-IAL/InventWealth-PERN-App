@@ -1,0 +1,74 @@
+// Use DBML to define your database structure
+// Docs: https://dbml.dbdiagram.io/docs
+
+Table users {
+  "id" SERIAL [primary key]
+  "email_address" varchar(50)
+  "hashed_pw" text
+  "auth_method" varchar(50) 
+}
+
+Table contact_details {
+  "id" SERIAL [primary key]
+  "address" varchar(200)
+  "postcode" varchar(8)
+  "phone" integer(12)
+}
+
+Table products {
+  "id" SERIAL [primary key]
+  "name" varchar(100)
+  "price" money
+  "slot_count" integer
+  "available_slot_count" integer
+  "short_description" varchar(200)
+  "long_description" text
+  "size" varchar
+  "avg_return" varchar(50)
+  "return_count" integer
+}
+
+Table cart_items {
+  "user_id" integer
+  "product_id" integer
+  "quantity" smallint [not null]
+  PRIMARY KEY ("user_id", "product_id")
+}
+
+Table orders {
+  "id" SERIAL [primary key]
+  "user_id" integer
+  "address_id" integer
+  "phone_id" integer
+  "order_placed_time" timestamp [not null, default: 'CURRENT_TIMESTAMP']
+  "status" varchar(100) [not null]
+  "total_cost" money [not null]
+}
+
+Table order_items {
+  "order_id" integer
+  "product_id" integer
+  "product_quantity" smallint [not null, default: 1]
+  PRIMARY KEY ("order_id", "product_id")
+}
+
+Table categories {
+  "id" SERIAL [PRIMARY KEY]
+  "name" varchar(100) [NOT NULL]
+  "description" text
+  "url_slug" varchar(50)
+}
+
+Table product_categories {
+  "product_id" integer
+  "category_id" integer
+  PRIMARY KEY ("product_id", "category_id")
+}
+ref: cart_items.user_id > users.id 
+ref: cart_items.product_id > products.id
+ref: orders.user_id > users.id
+ref: orders.address_id > contact_details.id
+ref: order_items.order_id > orders.id
+ref: order_items.product_id > products.id
+ref: product_categories.product_id > products.id
+ref: product_categories.category_id > categories.id
